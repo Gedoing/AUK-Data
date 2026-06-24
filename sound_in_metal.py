@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from Constants import BRASS_LENGTH, ALUMINIUM_LENGTH, COPPER_LENGTH, MEASUREMENT_UNCERTAINTY_METAL_TIME, METAL_LENGTH_UNCERTENTY
+from Constants import BRASS_LENGTH, ALUMINIUM_LENGTH, COPPER_LENGTH, MEASUREMENT_UNCERTAINTY_METAL_TIME, METAL_LENGTH_UNCERTENTY, ALUMINIUM_DENSITY, ALUMINIUM_DENSITY_ERROR, COPPER_DENSITY, COPPER_DENSITY_ERROR, BRASS_DENSITY, BRASS_DENSITY_ERROR
+
 
 #column names
 measurement_column = "Time per 5 periods (s)"
@@ -55,7 +56,7 @@ def speed_of_sound_error(metal: str):
     v, length = speed_of_sound(metal)
     period = average_period(metal)
     delta_period = average_period_error(metal)
-    delta_length = METAL_LENGTH_UNCERTENTY
+    delta_length = METAL_LENGTH_UNCERTENTY(length)
     
     # Using Gaussian error propagation for v = 2 * length / period
     # Relative error of v is the Pythagorean sum of relative errors of length and period
@@ -68,6 +69,33 @@ def speed_of_sound_error(metal: str):
     delta_speed = v * rel_error_speed
     return delta_speed
 
+def elasticity(metal: str) -> float:
+    speed = speed_of_sound(metal)[0]
+    if metal == "Aluminium":
+        density = ALUMINIUM_DENSITY
+    elif metal == "Brass":
+        density = BRASS_DENSITY
+    elif metal == "Copper":
+        density = COPPER_DENSITY
+
+    elasticity = speed**2 * density
+    return elasticity
+
+def elasticity_error(metal:str) -> float:
+    delta_speed = speed_of_sound_error(metal)
+    speed = speed_of_sound(metal)
+    relative_error_speed = delta_speed / speed
+    if metal == "Aluminium":
+        relative_error_density = ALUMINIUM_DENSITY_ERROR / ALUMINIUM_DENSITY
+    elif metal == "Brass":
+        relative_error_density = BRASS_DENSITY_ERROR / BRASS_DENSITY
+    elif metal == "Copper":
+        relative_error_density = COPPER_DENSITY_ERROR / COPPER_DENSITY
+
+    relative_error_elasticity = np.sqrt((2*relative_error_speed)**2 + relative_error_density**2)
+    elasticity_error = elasticity(metal) * relative_error_elasticity
+    return elasticity_error
+
 
 
 def main(metal: str):
@@ -76,6 +104,7 @@ def main(metal: str):
     print("\n--- Final Evaluations ---")
     print(f"Average Period: {average_period(metal)} +- {average_period_error(metal)} s")
     print(f"Speed of sound: {speed_of_sound(metal)[0]} +- {speed_of_sound_error(metal)} m/s")
+    print(f"Elasticity: {elasticity(metal)} +/- {elasticity_error(metal)}")
 
 main("Aluminium")
 print(" ")
