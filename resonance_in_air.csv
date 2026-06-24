@@ -1,0 +1,4 @@
+Frequency  (Hz),Resonance length 1 (m),Resonance length 2 (m),Resonance length 3 (m),Resonance length 4 (m),Resonance length 5 (m),Resonance length 6 (m),Resonance length 7 (m),Resonance length 8 (m),Resonance length 9 (m)
+600,0.111,0.407,0.702,0.99,,,,,
+1000,0.067,0.244,0.412,0.586,0.763,0.934,,,
+1500,,0.158,0.275,0.388,0.507,0.627,0.739,0.853,0.968
