@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import odrpack
 
+from matplotlib.ticker import FuncFormatter
+
 from Constants import SOUNT_IN_AIR_TIME_UNCERTENTY, SOUNT_IN_AIR_DISTANCE_UNCERTENTY, MOLAR_MASS_AIR, IDEAL_GAS_CONSTSNT, ROOM_THEMPERATURE, ROOM_THEMPERATURE_UNCERTENTY
 
 
@@ -82,8 +84,13 @@ def fit_and_plot_sound_speed(df: pd.DataFrame):
         label=f"ODR Fit: $v$ = {v_sound:.1f} ± {v_sound_error:.1f} m/s",
     )
 
+    #change x axis label to ms
+    def to_ms(x, pos):
+        return f"{x * 1000:.2f}"
+    plt.gca().xaxis.set_major_formatter(FuncFormatter(to_ms))
+
     # Labels and formatting
-    plt.xlabel("Propagation Time $t$ (s)")
+    plt.xlabel("Propagation Time $t$ (ms)")
     plt.ylabel("Distance $d$ (m)")
     plt.title("Determination of the Speed of Sound in Air")
     plt.grid(True, linestyle=":", alpha=0.6)
@@ -115,6 +122,7 @@ def main():
     print(f"Calculated Speed of Sound: {v_sound:.2f} +/- {v_sound_error:.2f} m/s")
     print(f"Intercept at: {intercept}")
     print(f"The adiabatic index is : {adiabatic_index} +/- {adiabatic_index_error}")
+    fig.savefig("Figures/sound in air")
     plt.show()
 
 main()

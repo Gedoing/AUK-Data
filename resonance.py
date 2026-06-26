@@ -39,9 +39,7 @@ def analyze_and_graph(df: pd.DataFrame, frequency: int):
     # ODRPACK expects weights (1 / sigma^2) instead of standard deviations
     weight_y = np.full_like(values, 1.0 / (RESONANCE_LENGTH_UNCERTENTY**2))
 
-    # -------------------------------------------------------------------------
-    # Corrected execution via standalone odrpack interface
-    # -------------------------------------------------------------------------
+
     sol = odr_fit(
         f=linear_model,
         xdata=node_numbers,
@@ -57,7 +55,7 @@ def analyze_and_graph(df: pd.DataFrame, frequency: int):
     # Calculate final physical speed of sound: v = 2 * m * f
     v = 2 * m * frequency
 
-    # Rigorous total differential to account for parameter coupling
+    # total differential to account for parameter coupling
     sigma_v = (2 * frequency * sigma_m) + (2 * m * FREQUENCY_UNCERTAINTY)
 
     print(f"\n--- Results for f = {frequency} Hz ---")
@@ -112,8 +110,8 @@ def main():
     # Map across your active frequencies
     frequenzen = [600, 1000, 1500] 
     for f in frequenzen:
-        analyze_and_graph(df, f)
-
+        fig = analyze_and_graph(df, f)
+        fig.savefig(f"Figures/resonance {f}Hz")
     plt.show()
 
 main()
